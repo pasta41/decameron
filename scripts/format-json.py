@@ -14,8 +14,7 @@ def join_and_space(list_of_paragraphs):
 def combine_rubric_and_text(rubric, text):
 	return rubric + " " + text
 
-def put_day_conclusion_and_song(remainder_unformatted, phrase_after_song):
-	day_index_unformatted = 0
+def put_day_conclusion_and_song(remainder_unformatted, phrase_after_song, day_index_unformatted):
 	# conclusion is the last (11th index) element of the day
 	conclusion_unformatted = remainder_unformatted[day_index_unformatted]["div2"][11]
 	day_index_formatted = str(day_index_unformatted + 1)
@@ -106,13 +105,13 @@ for day_unformatted_index in range(0, 10):
 	# get intro; in 0th index; format 
 	intro = day_body_unformatted[0]["p"]
 	intro = combine_rubric_and_text(day_rubric, join_and_space(intro))
-	print(day_formatted_index)
-	print(intro)
-	print()
+	#print(day_formatted_index)
+	#print(intro)
+	#print()
 	current_day_formatted["introduction"]["text"] = intro
 
 	# get stories; inner loop for each of the 10; format
-	# from 1 to 10, since those are the indices for the stories TODO
+	# from 1 to 10, since those are the indices for the stories
 	for story_index in range(1, 11):
 		current_story_unformatted = day_body_unformatted[story_index]
 
@@ -133,13 +132,16 @@ for day_unformatted_index in range(0, 10):
 # write story conclusions (one at a time because of weird formatting)
 
 # conclusion 1
-put_day_conclusion_and_song(remainder_unformatted, "Questa ballatetta finita")
+put_day_conclusion_and_song(remainder_unformatted, "Questa ballatetta finita", 0)
 
 # conclusion 2
+put_day_conclusion_and_song(remainder_unformatted, "Appresso questa, più altre se ne cantarono e più", 1)
 
 # conclusion 3
+put_day_conclusion_and_song(remainder_unformatted, "Qui fece fine la Lauretta alla sua canzone", 2)
 
 # conclusion 4
+put_day_conclusion_and_song(remainder_unformatted, "Dimostrarono le parole di questa canzone", 3)
 
 # conclusion 5
 
