@@ -8,11 +8,34 @@ def remove_stanza(stanza):
 	return stanza.replace("\n", " ")
 
 def join_and_space(list_of_paragraphs):
-	return remove_stanza(''.join([str(elem) for elem in list_of_paragraphs]))
+	return remove_stanza(''.join([(str(elem) + " ") for elem in list_of_paragraphs])).strip()
 
 # combine rubric and body; TODO revisit this when add comma numbers
 def combine_rubric_and_text(rubric, text):
 	return rubric + " " + text
+
+def put_day_conclusion_and_song(remainder_unformatted, phrase_after_song):
+	day_index_unformatted = 0
+	# conclusion is the last (11th index) element of the day
+	conclusion_unformatted = remainder_unformatted[day_index_unformatted]["div2"][11]
+	day_index_formatted = str(day_index_unformatted + 1)
+	day_conclusion_formatted = days_structure[day_index_formatted]["sections"]["conclusion"]
+
+	conclusion_body = join_and_space(conclusion_unformatted['p'])
+	conclusion_song = conclusion_unformatted['lg']['lg']
+
+	# could do this with map, but don't care enough to
+	song = ""
+	for i in range(0, len(conclusion_song)):
+		stanza = join_and_space(conclusion_song[i]['l'])
+		song += stanza + " "
+
+	song = song.strip()
+
+	# splice song into the right spot
+	x = conclusion_body.find(phrase_after_song)
+	conclusion_formatted = conclusion_body[:x] + song + " " + conclusion_body[x:]
+	day_conclusion_formatted["text"] = conclusion_formatted
 
 # open raw converted from xml decameron json
 json_doc = "../data/json/raw-decameron.json"
@@ -83,6 +106,9 @@ for day_unformatted_index in range(0, 10):
 	# get intro; in 0th index; format 
 	intro = day_body_unformatted[0]["p"]
 	intro = combine_rubric_and_text(day_rubric, join_and_space(intro))
+	print(day_formatted_index)
+	print(intro)
+	print()
 	current_day_formatted["introduction"]["text"] = intro
 
 	# get stories; inner loop for each of the 10; format
@@ -100,13 +126,42 @@ for day_unformatted_index in range(0, 10):
 
 		current_day_formatted[str(story_index)]["text"] = current_story
 
-# TODO write conclusions (manually, because of weird formatting)
+# overwrite stories that have songs in them TODO
+
+# clean up latin todo search for @
+
+# write story conclusions (one at a time because of weird formatting)
+
+# conclusion 1
+put_day_conclusion_and_song(remainder_unformatted, "Questa ballatetta finita")
+
+# conclusion 2
+
+# conclusion 3
+
+# conclusion 4
+
+# conclusion 5
+
+# conclusion 6
+
+# conclusion 7
+
+# conclusion 8
+
+# conclusion 9
+
+# conclusion 10
+
+# write authors conclusion out
+conclusion_unformatted = remainder_unformatted[10]
+# get conclusion body; put into new structure
+conclusion_body = join_and_space(conclusion_unformatted["p"])
+conclusion_trailer = join_and_space(conclusion_unformatted["trailer"])
+conclusion = combine_rubric_and_text(conclusion_body, conclusion_trailer)
+text["conclusion"]["text"] = conclusion
 
 # write out decameron in formatted structure
 with open("../data/json/decameron.json", "w", encoding='utf8') as json_file:
-		json.dump(structure, json_file, indent=4, ensure_ascii=False)
+	json.dump(structure, json_file, indent=2, ensure_ascii=False)
 
-# get conclusion; format
-#conclusion = day_body_unformatted[11]["p"]
-#for k,v in current_story_unformatted.items():
-#	print(k)
