@@ -10,6 +10,9 @@ def remove_stanza(stanza):
 def join_and_space(list_of_paragraphs):
 	return remove_stanza(''.join([(str(elem) + " ") for elem in list_of_paragraphs])).strip()
 
+def join_and_space_flat(paragraphs):
+	return remove_stanza(paragraphs).strip()
+
 # combine rubric and body; TODO revisit this when add comma numbers
 def combine_rubric_and_text(rubric, text):
 	return rubric + " " + text
@@ -101,13 +104,23 @@ for day_unformatted_index in range(0, 10):
 	# will add story conclusions at the end of the script
 
 	day_body_unformatted = day_unformatted["div2"]
+	#print(day_formatted_index)
+		
 
 	# get intro; in 0th index; format 
 	intro = day_body_unformatted[0]["p"]
-	intro = combine_rubric_and_text(day_rubric, join_and_space(intro))
-	#print(day_formatted_index)
-	#print(intro)
-	#print()
+	join_and_space_intro = ""
+	# intros 2, 8, and 10 are not lists of lines; just all flat in one field
+	if day_formatted_index in ["2", "8", "10"]:
+		join_and_space_intro = join_and_space_flat(intro)
+	else:
+		join_and_space_intro = join_and_space(intro)
+		
+	intro = combine_rubric_and_text(day_rubric, join_and_space_intro)
+	print(day_formatted_index)
+	print(intro)
+	print()
+
 	current_day_formatted["introduction"]["text"] = intro
 
 	# get stories; inner loop for each of the 10; format
