@@ -115,11 +115,11 @@ for day_unformatted_index in range(0, 10):
 		join_and_space_intro = join_and_space_flat(intro)
 	else:
 		join_and_space_intro = join_and_space(intro)
-		
+
 	intro = combine_rubric_and_text(day_rubric, join_and_space_intro)
-	print(day_formatted_index)
-	print(intro)
-	print()
+	#print(day_formatted_index)
+	#print(intro)
+	#print()
 
 	current_day_formatted["introduction"]["text"] = intro
 
@@ -132,10 +132,19 @@ for day_unformatted_index in range(0, 10):
 		current_story_rubric = remove_stanza(
 			current_story_unformatted["argument"]["p"]["emph"])
 		# get story, combine with rubric; format
-		current_story_unformatted = current_story_unformatted["p"]
+		current_story_unformatted_p = current_story_unformatted["p"]
 		current_story = combine_rubric_and_text(current_story_rubric,
-			join_and_space(current_story_unformatted))
+			join_and_space(current_story_unformatted_p))
 
+		# 4.5  has a song in it with italicized text
+		if day_formatted_index == "4" and story_index == 5:
+			#print(current_story_unformatted)
+			song = current_story_unformatted["lg"]["l"]
+			# song is a list of 2 maps
+			song_flattened = song[0]["emph"] + " " + song[1]["emph"] + " " + song[1]["#text"]
+			#print(song_flattened) song at end of story
+			current_story = current_story + " " + song_flattened
+		
 		current_day_formatted[str(story_index)]["text"] = current_story
 
 # overwrite stories that have songs in them TODO
