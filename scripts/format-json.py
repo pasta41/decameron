@@ -17,13 +17,14 @@ def join_and_space_flat(paragraphs):
 def combine_rubric_and_text(rubric, text):
 	return rubric + " " + text
 
-def put_day_conclusion_and_song(remainder_unformatted, phrase_after_song, day_index_unformatted):
+def get_conclusion_unformatted(remainder_unformatted, day_index_unformatted):
 	# conclusion is the last (11th index) element of the day
 	conclusion_unformatted = remainder_unformatted[day_index_unformatted]["div2"][11]
 	day_index_formatted = str(day_index_unformatted + 1)
 	day_conclusion_formatted = days_structure[day_index_formatted]["sections"]["conclusion"]
+	return conclusion_unformatted, day_index_formatted, day_conclusion_formatted
 
-	conclusion_body = join_and_space(conclusion_unformatted['p'])
+def get_conclusion_song(conclusion_unformatted):
 	conclusion_song = conclusion_unformatted['lg']['lg']
 
 	# could do this with map, but don't care enough to
@@ -33,9 +34,16 @@ def put_day_conclusion_and_song(remainder_unformatted, phrase_after_song, day_in
 		song += stanza + " "
 
 	song = song.strip()
+	return song
 
+def put_day_conclusion_and_song(remainder_unformatted, phrase_after_song, day_index_unformatted):
+	conclusion_unformatted, day_index_formatted, day_conclusion_formatted = get_conclusion_unformatted(
+		remainder_unformatted, day_index_unformatted)
+	conclusion_body = join_and_space(conclusion_unformatted['p'])
+	
 	# splice song into the right spot
 	x = conclusion_body.find(phrase_after_song)
+	song = get_conclusion_song(conclusion_unformatted)
 	conclusion_formatted = conclusion_body[:x] + song + " " + conclusion_body[x:]
 	day_conclusion_formatted["text"] = conclusion_formatted
 
@@ -44,6 +52,55 @@ def splice_phrase_in(text, phrase, phrase_after):
 	x = text.find(phrase_after)
 	formatted = (text[:x] + phrase).strip() + text[x:]
 	return formatted
+
+# for day 5 conclusion
+def get_day_5_conclusion(remainder_unformatted, day_index_unformatted, phrase_after_song):
+	conclusion_unformatted, day_index_formatted, day_conclusion_formatted = get_conclusion_unformatted(
+		remainder_unformatted, day_index_unformatted)
+	p_conclusion_unformatted = conclusion_unformatted['p']
+	first_three = join_and_space(p_conclusion_unformatted[0:3])
+	fourth_unformatted = p_conclusion_unformatted[3]
+	fourth = join_and_space_flat(splice_phrase_in(fourth_unformatted["#text"], 
+		fourth_unformatted["emph"], 
+		". Di che tutte le donne cominciarono"))
+	conclusion_without_song = first_three + " " + fourth
+
+	fifth_unformatted = p_conclusion_unformatted[4]
+	fifth_cur = splice_phrase_in(fifth_unformatted["#text"],
+		fifth_unformatted["emph"][0], " o ")
+	fifth_cur = splice_phrase_in(fifth_cur, fifth_unformatted["emph"][1], "; o voleste voi che")
+	fifth_cur = splice_phrase_in(fifth_cur, fifth_unformatted["emph"][2], "? Ma io")
+	fifth_cur = splice_phrase_in(fifth_cur, fifth_unformatted["emph"][3], "?–")
+	fifth = join_and_space_flat(fifth_cur)
+	conclusion_without_song += " " + fifth + " " + p_conclusion_unformatted[5]
+
+	seventh_unformatted = p_conclusion_unformatted[6]
+	seventh = join_and_space_flat(splice_phrase_in(seventh_unformatted["#text"], 
+		seventh_unformatted["emph"], 
+		".–"))
+	conclusion_without_song += " " + seventh + " " + join_and_space_flat(p_conclusion_unformatted[7])
+
+	ninth_unformatted = p_conclusion_unformatted[8]
+	ninth_cur = splice_phrase_in(ninth_unformatted["#text"],
+		ninth_unformatted["emph"][0], " o ")
+	ninth_cur = splice_phrase_in(ninth_cur,
+		ninth_unformatted["emph"][1], "  o")
+	x = ninth_cur.find("Deh")
+	ninth_cur = ninth_cur[:x] + " " + ninth_cur[x: ]
+	ninth_cur = splice_phrase_in(ninth_cur,
+		ninth_unformatted["emph"][2], "?–")
+	x = ninth_cur.find("  o")
+	ninth_cur = ninth_cur[:x] + ninth_cur[x+1: ]
+	conclusion_without_song += " " + join_and_space_flat(ninth_cur)
+	conclusion_without_song += " " + join_and_space_flat(p_conclusion_unformatted[9]) 
+	conclusion_without_song += " "  + join_and_space_flat(p_conclusion_unformatted[10]) 
+	conclusion_without_song += " " + join_and_space_flat(p_conclusion_unformatted[11])
+	conclusion_body = conclusion_without_song
+	# splice song into the right spot
+	x = conclusion_body.find(phrase_after_song)
+	song = get_conclusion_song(conclusion_unformatted)
+	conclusion_formatted = conclusion_body[:x] + song + " " + conclusion_body[x:]
+	day_conclusion_formatted["text"] = conclusion_formatted
 
 
 # open raw converted from xml decameron json
@@ -179,7 +236,9 @@ put_day_conclusion_and_song(remainder_unformatted, "Qui fece fine la Lauretta al
 # conclusion 4
 put_day_conclusion_and_song(remainder_unformatted, "Dimostrarono le parole di questa canzone", 3)
 
-# conclusion 5
+# conclusion 5 -- has lots of formatted text / is "special"
+get_day_5_conclusion(remainder_unformatted, 4, "Da poi che Dioneo tacendo")
+
 
 # conclusion 6
 
