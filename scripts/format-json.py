@@ -39,6 +39,13 @@ def put_day_conclusion_and_song(remainder_unformatted, phrase_after_song, day_in
 	conclusion_formatted = conclusion_body[:x] + song + " " + conclusion_body[x:]
 	day_conclusion_formatted["text"] = conclusion_formatted
 
+# for splicing text in with a space already there to mark it
+def splice_phrase_in(text, phrase, phrase_after):
+	x = text.find(phrase_after)
+	formatted = (text[:x] + phrase).strip() + text[x:]
+	return formatted
+
+
 # open raw converted from xml decameron json
 json_doc = "../data/json/raw-decameron.json"
 
@@ -113,6 +120,13 @@ for day_unformatted_index in range(0, 10):
 	# intros 2, 8, and 10 are not lists of lines; just all flat in one field
 	if day_formatted_index in ["2", "8", "10"]:
 		join_and_space_intro = join_and_space_flat(intro)
+	elif day_formatted_index == "5":
+		# there is latin in the 5th intro
+		latin = intro["foreign"]["#text"]
+		italian = intro["#text"]
+		# italian is flat
+		intro_flat = join_and_space_flat(italian)
+		join_and_space_intro = splice_phrase_in(intro_flat, latin, ", verso Panfilo riguardando")
 	else:
 		join_and_space_intro = join_and_space(intro)
 
@@ -144,7 +158,7 @@ for day_unformatted_index in range(0, 10):
 			song_flattened = song[0]["emph"] + " " + song[1]["emph"] + " " + song[1]["#text"]
 			#print(song_flattened) song at end of story
 			current_story = current_story + " " + song_flattened
-		
+
 		current_day_formatted[str(story_index)]["text"] = current_story
 
 # overwrite stories that have songs in them TODO
