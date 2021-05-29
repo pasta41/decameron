@@ -283,6 +283,12 @@ for day_unformatted_index in range(0, 10):
 			flat_it_2 = join_and_space(current_story_unformatted_p[10:])
 			
 			current_story += flat_it_1 + " " + formatted_special + " " + flat_it_2
+		# 10.7 has a special canzonetta, with formatting that makes no sense
+		elif day_formatted_index == "10" and story_index == 7:
+			song = get_conclusion_song(current_story_unformatted)
+			# song goes between 7 and 8
+			flat_it_1 = join_and_space(current_story_unformatted_p[0:8])
+			current_story = flat_it_1 + " " + song + " " + join_and_space(current_story_unformatted_p[8:])
 		else:
 			#current_story = combine_rubric_and_text(current_story_rubric,
 			#	join_and_space(current_story_unformatted_p))

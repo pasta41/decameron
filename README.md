@@ -26,7 +26,7 @@ Pull requests are welcome. For major changes, please open an issue.
 
 ## Notes
 
-There is sometimes text that is marked as italicized or with foreign language metadata (always Latin). I have removed these tags because the text that contains it is formatted in a very odd way. The things to grep for in the original/ raw text are: @, #, text, foreign, and lat. 
+There is sometimes text that is marked as italicized or with foreign language metadata (always Latin). I have removed these tags because the text that contains it is formatted in a very odd way. The things to grep for in the original/ raw text are: @, #, text, foreign, lat, rend, block, canzonetta. 
 
 ## Citations
 
