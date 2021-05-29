@@ -211,22 +211,19 @@ for day_unformatted_index in range(0, 10):
 		# get story, combine with rubric; format
 		current_story_unformatted_p = current_story_unformatted["p"]
 		
+		current_story = ""
 		# 1.6 has latin in it, in own dict
 		if day_formatted_index == "1" and story_index == 6:
-			current_story = current_story_rubric + " "
 			current_story += splice_latin_in(current_story_unformatted_p, 0, 2, " impetuosissimamente")
 			remainder_story = join_and_space(current_story_unformatted_p[3:])
 			current_story += remainder_story
 		# 1.9 has latin in it, in own dict	
 		elif day_formatted_index == "1" and story_index == 9:
-			current_story = current_story_rubric + " "
 			current_story += splice_latin_in(current_story_unformatted_p, 0, 1, " detta, l'ha operato")
 			remainder_story = join_and_space(current_story_unformatted_p[3:])
 			current_story += remainder_story
 		# 2.2 has a bunch of stuff going on in it	
 		elif day_formatted_index == "2" and story_index == 2:
-			current_story = current_story_rubric + " "
-			
 			flat_it_1 = join_and_space(current_story_unformatted_p[0:7])
 
 			inner = current_story_unformatted_p[7]
@@ -240,13 +237,11 @@ for day_unformatted_index in range(0, 10):
 			current_story += flat_it_1 + " " + formatted_special + " " + flat_it_2
 		# 3.8 has latin in it, in own dict	
 		elif day_formatted_index == "3" and story_index == 8:
-			current_story = current_story_rubric + " "
 			current_story += splice_latin_in(current_story_unformatted_p, 0, 58, ". Ferondo torn")
 			remainder_story = join_and_space(current_story_unformatted_p[59:])
 			current_story += remainder_story
 		# 7.1 has latin in it, in own dict
 		elif day_formatted_index == "7" and story_index == 1:
-			current_story = current_story_rubric + " "
 			flat_it_1 = join_and_space(current_story_unformatted_p[0:8])
 			inner = current_story_unformatted_p[8]
 			formatted_special = join_and_space_flat(inner['#text'])
@@ -257,8 +252,9 @@ for day_unformatted_index in range(0, 10):
 
 			current_story += flat_it_1 + " " + formatted_special + " " + flat_it_2
 		else:
-			current_story = combine_rubric_and_text(current_story_rubric,
-				join_and_space(current_story_unformatted_p))
+			#current_story = combine_rubric_and_text(current_story_rubric,
+			#	join_and_space(current_story_unformatted_p))
+			current_story = join_and_space(current_story_unformatted_p)
 
 			# 4.5  has a song in it with italicized text
 			if day_formatted_index == "4" and story_index == 5:
@@ -268,6 +264,7 @@ for day_unformatted_index in range(0, 10):
 				#print(song_flattened) song at end of story
 				current_story = current_story + " " + song_flattened
 
+		current_day_formatted[str(story_index)]["rubric"] = current_story_rubric
 		current_day_formatted[str(story_index)]["text"] = current_story
 
 # overwrite stories that have songs in them TODO
@@ -307,9 +304,10 @@ put_day_conclusion_and_song(remainder_unformatted, "Estimar fece questa canzone"
 conclusion_unformatted = remainder_unformatted[10]
 # get conclusion body; put into new structure
 conclusion_body = join_and_space(conclusion_unformatted["p"])
-conclusion_trailer = join_and_space(conclusion_unformatted["trailer"])
-conclusion = combine_rubric_and_text(conclusion_body, conclusion_trailer)
-text["conclusion"]["text"] = conclusion
+conclusion_trailer = join_and_space_flat(conclusion_unformatted["trailer"])
+#conclusion = combine_rubric_and_text(conclusion_body, conclusion_trailer)
+text["conclusion"]["text"] = conclusion_body
+text["conclusion"]["trailer"] = conclusion_trailer
 
 # write out decameron in formatted structure
 with open("../data/json/decameron.json", "w", encoding='utf8') as json_file:
