@@ -293,6 +293,7 @@ get_day_5_conclusion(remainder_unformatted, 4, "Da poi che Dioneo tacendo")
 put_day_conclusion_and_song(remainder_unformatted, "Poi che con un sospiro assai", 5)
 
 # conclusion 7
+put_day_conclusion_and_song(remainder_unformatted, "Estimar fece questa canzone", 6)
 
 # conclusion 8
 
