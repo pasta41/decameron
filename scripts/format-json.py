@@ -277,8 +277,8 @@ put_day_conclusion_and_song(remainder_unformatted, "Dimostrarono le parole di qu
 # conclusion 5 -- has lots of formatted text / is "special"
 get_day_5_conclusion(remainder_unformatted, 4, "Da poi che Dioneo tacendo")
 
-
 # conclusion 6
+put_day_conclusion_and_song(remainder_unformatted, "Poi che con un sospiro assai", 5)
 
 # conclusion 7
 
