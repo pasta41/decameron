@@ -289,6 +289,11 @@ for day_unformatted_index in range(0, 10):
 			# song goes between 7 and 8
 			flat_it_1 = join_and_space(current_story_unformatted_p[0:8])
 			current_story = flat_it_1 + " " + song + " " + join_and_space(current_story_unformatted_p[8:])
+		# 10.8 has latin in it, in own dict	
+		elif day_formatted_index == "10" and story_index == 8:
+			current_story += splice_latin_in(current_story_unformatted_p, 0, 15, " disposto fosse che ella non di Gisippo")
+			remainder_story = join_and_space(current_story_unformatted_p[16:])
+			current_story += remainder_story
 		else:
 			#current_story = combine_rubric_and_text(current_story_rubric,
 			#	join_and_space(current_story_unformatted_p))
@@ -335,6 +340,7 @@ put_day_conclusion_and_song(remainder_unformatted, "La canzone di Panfilo", 7)
 put_day_conclusion_and_song(remainder_unformatted, "Assai fu e dal", 8)
 
 # conclusion 10
+put_day_conclusion_and_song(remainder_unformatted, "Come la Fiammetta ebbe", 9)
 
 # write authors conclusion out
 conclusion_unformatted = remainder_unformatted[10]
