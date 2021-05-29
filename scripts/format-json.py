@@ -54,10 +54,9 @@ def splice_phrase_in(text, phrase, phrase_after):
 	return formatted
 
 # splice latin in; stop at that point in p list; return flat text
+
 def splice_latin_in(text_list, start_index, latin_index, phrase_after_latin):
 	it_formatted = join_and_space(text_list[start_index:latin_index])
-
-
 	latin = text_list[latin_index]['foreign']['#text']
 	text_with_latin = join_and_space_flat(text_list[latin_index]['#text'])
 	joined_latin = splice_phrase_in(text_with_latin, latin, phrase_after_latin)
@@ -213,6 +212,11 @@ for day_unformatted_index in range(0, 10):
 		# 1.6 has latin in it, in own dict
 		if day_formatted_index == "1" and story_index == 6:
 			current_story = splice_latin_in(current_story_unformatted_p, 0, 2, " impetuosissimamente")
+			remainder_story = join_and_space(current_story_unformatted_p[3:])
+			current_story += remainder_story
+		# 1.9 has latin in it, in own dict	
+		elif day_formatted_index == "1" and story_index == 9:
+			current_story = splice_latin_in(current_story_unformatted_p, 0, 1, " detta, l'ha operato")
 			remainder_story = join_and_space(current_story_unformatted_p[3:])
 			current_story += remainder_story
 		else:
