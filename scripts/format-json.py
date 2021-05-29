@@ -240,7 +240,7 @@ for day_unformatted_index in range(0, 10):
 			current_story += splice_latin_in(current_story_unformatted_p, 0, 58, ". Ferondo torn")
 			remainder_story = join_and_space(current_story_unformatted_p[59:])
 			current_story += remainder_story
-		# 7.1 has latin in it, in own dict
+		# 7.1 has multiple things
 		elif day_formatted_index == "7" and story_index == 1:
 			flat_it_1 = join_and_space(current_story_unformatted_p[0:8])
 			inner = current_story_unformatted_p[8]
@@ -269,6 +269,19 @@ for day_unformatted_index in range(0, 10):
 			
 			flat_it_2 = join_and_space(current_story_unformatted_p[25:])
 
+			current_story += flat_it_1 + " " + formatted_special + " " + flat_it_2
+		# 10.6 has a special two line song and and @rend noindent block
+		elif day_formatted_index == "10" and story_index == 6:
+			flat_it_1 = join_and_space(current_story_unformatted_p[0:8])
+			inner = current_story_unformatted_p[8]
+			formatted_special = join_and_space_flat(inner['#text'])
+			# the song has two lines and goes at the end of the inner in this case
+			formatted_special += " " + inner["q"]["lg"]["l"][0]["emph"] + " " + inner["q"]["lg"]["l"][1]["emph"]
+			
+			formatted_special += " " + join_and_space_flat(current_story_unformatted_p[9]["#text"])
+			
+			flat_it_2 = join_and_space(current_story_unformatted_p[10:])
+			
 			current_story += flat_it_1 + " " + formatted_special + " " + flat_it_2
 		else:
 			#current_story = combine_rubric_and_text(current_story_rubric,
