@@ -211,13 +211,36 @@ for day_unformatted_index in range(0, 10):
 		
 		# 1.6 has latin in it, in own dict
 		if day_formatted_index == "1" and story_index == 6:
-			current_story = splice_latin_in(current_story_unformatted_p, 0, 2, " impetuosissimamente")
+			current_story = current_story_rubric + " "
+			current_story += splice_latin_in(current_story_unformatted_p, 0, 2, " impetuosissimamente")
 			remainder_story = join_and_space(current_story_unformatted_p[3:])
 			current_story += remainder_story
 		# 1.9 has latin in it, in own dict	
 		elif day_formatted_index == "1" and story_index == 9:
-			current_story = splice_latin_in(current_story_unformatted_p, 0, 1, " detta, l'ha operato")
+			current_story = current_story_rubric + " "
+			current_story += splice_latin_in(current_story_unformatted_p, 0, 1, " detta, l'ha operato")
 			remainder_story = join_and_space(current_story_unformatted_p[3:])
+			current_story += remainder_story
+		# 2.2 has a bunch of stuff going on in it	
+		elif day_formatted_index == "2" and story_index == 2:
+			current_story = current_story_rubric + " "
+			
+			flat_it_1 = join_and_space(current_story_unformatted_p[0:7])
+
+			inner = current_story_unformatted_p[7]
+			formatted_special = join_and_space_flat(inner['#text'])
+			formatted_special =  splice_phrase_in(formatted_special, inner['foreign'][0]['#text'], " o la ")
+			formatted_special = splice_phrase_in(formatted_special, inner['emph'], " o il ")
+			formatted_special = splice_phrase_in(formatted_special, inner['foreign'][1]['#text'], ", che sono, secondo che una ")
+
+			flat_it_2 = join_and_space(current_story_unformatted_p[8:])
+			
+			current_story += flat_it_1 + " " + formatted_special + " " + flat_it_2
+		# 3.8 has latin in it, in own dict	
+		elif day_formatted_index == "3" and story_index == 8:
+			current_story = current_story_rubric + " "
+			current_story += splice_latin_in(current_story_unformatted_p, 0, 58, ". Ferondo torn")
+			remainder_story = join_and_space(current_story_unformatted_p[59:])
 			current_story += remainder_story
 		else:
 			current_story = combine_rubric_and_text(current_story_rubric,
