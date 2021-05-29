@@ -313,6 +313,7 @@ put_day_conclusion_and_song(remainder_unformatted, "Estimar fece questa canzone"
 put_day_conclusion_and_song(remainder_unformatted, "La canzone di Panfilo", 7)
 
 # conclusion 9
+put_day_conclusion_and_song(remainder_unformatted, "Assai fu e dal", 8)
 
 # conclusion 10
 
