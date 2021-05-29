@@ -251,6 +251,25 @@ for day_unformatted_index in range(0, 10):
 			flat_it_2 = join_and_space(current_story_unformatted_p[9:])
 
 			current_story += flat_it_1 + " " + formatted_special + " " + flat_it_2
+		# 8.2 has a lot going on	
+		elif day_formatted_index == "8" and story_index == 2:
+			flat_it_1 = join_and_space(current_story_unformatted_p[0:3])
+			inner = current_story_unformatted_p[3]
+			formatted_special = join_and_space_flat(inner['#text'])
+			formatted_special = splice_phrase_in(formatted_special, inner['emph'][0], " e menar la ridda")
+			formatted_special = splice_phrase_in(formatted_special, inner['emph'][1], " e un")
+			formatted_special = splice_phrase_in(formatted_special, inner['foreign']['#text'], " sforzandosi ben")
+			
+			flat_it_1 += " " + formatted_special + " " + join_and_space(current_story_unformatted_p[9:24])
+
+			inner = current_story_unformatted_p[24]
+			formatted_special = join_and_space_flat(inner['#text'])
+			formatted_special =  splice_phrase_in(formatted_special, inner['foreign'][0]['#text'], ", e egli volea fare")
+			formatted_special =  splice_phrase_in(formatted_special, inner['foreign'][1]['#text'], ", disse:")
+			
+			flat_it_2 = join_and_space(current_story_unformatted_p[25:])
+
+			current_story += flat_it_1 + " " + formatted_special + " " + flat_it_2
 		else:
 			#current_story = combine_rubric_and_text(current_story_rubric,
 			#	join_and_space(current_story_unformatted_p))
@@ -266,10 +285,6 @@ for day_unformatted_index in range(0, 10):
 
 		current_day_formatted[str(story_index)]["rubric"] = current_story_rubric
 		current_day_formatted[str(story_index)]["text"] = current_story
-
-# overwrite stories that have songs in them TODO
-
-# clean up latin todo search for @
 
 # write story conclusions (one at a time because of weird formatting)
 
