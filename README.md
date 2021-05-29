@@ -24,6 +24,10 @@ Building a tool that uses a modified grep to return text matches (with the surro
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue. 
 
+## Notes
+
+There is sometimes text that is marked as italicized or with foreign language metadata (always Latin). I have removed these tags because the text that contains it is formatted in a very odd way. The things to grep for in the original/ raw text are: @, #, text, foreign, and lat. 
+
 ## Citations
 
 This work is possible due to Sapienza, Università di Roma's [Biblioteca italiana project](http://www.bibliotecaitaliana.it/). Currently, they host the Vittore Branca edition of the Decameron [here](http://backend.bibliotecaitaliana.it/wp-json/muruca-core/v1/xml/bibit000267). 

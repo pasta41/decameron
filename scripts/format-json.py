@@ -242,6 +242,18 @@ for day_unformatted_index in range(0, 10):
 			current_story += splice_latin_in(current_story_unformatted_p, 0, 58, ". Ferondo torn")
 			remainder_story = join_and_space(current_story_unformatted_p[59:])
 			current_story += remainder_story
+		# 7.1 has latin in it, in own dict
+		elif day_formatted_index == "7" and story_index == 1:
+			current_story = current_story_rubric + " "
+			flat_it_1 = join_and_space(current_story_unformatted_p[0:8])
+			inner = current_story_unformatted_p[8]
+			formatted_special = join_and_space_flat(inner['#text'])
+			formatted_special =  splice_phrase_in(formatted_special, inner['foreign']['#text'], " e la ")
+			formatted_special = splice_phrase_in(formatted_special, inner['emph'], " e tante altre buone")
+
+			flat_it_2 = join_and_space(current_story_unformatted_p[9:])
+
+			current_story += flat_it_1 + " " + formatted_special + " " + flat_it_2
 		else:
 			current_story = combine_rubric_and_text(current_story_rubric,
 				join_and_space(current_story_unformatted_p))
