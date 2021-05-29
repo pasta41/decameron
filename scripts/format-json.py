@@ -53,6 +53,16 @@ def splice_phrase_in(text, phrase, phrase_after):
 	formatted = (text[:x] + phrase).strip() + text[x:]
 	return formatted
 
+# splice latin in; stop at that point in p list; return flat text
+def splice_latin_in(text_list, start_index, latin_index, phrase_after_latin):
+	it_formatted = join_and_space(text_list[start_index:latin_index])
+
+
+	latin = text_list[latin_index]['foreign']['#text']
+	text_with_latin = join_and_space_flat(text_list[latin_index]['#text'])
+	joined_latin = splice_phrase_in(text_with_latin, latin, phrase_after_latin)
+	return it_formatted + " " + joined_latin
+
 # for day 5 conclusion
 def get_day_5_conclusion(remainder_unformatted, day_index_unformatted, phrase_after_song):
 	conclusion_unformatted, day_index_formatted, day_conclusion_formatted = get_conclusion_unformatted(
@@ -168,8 +178,6 @@ for day_unformatted_index in range(0, 10):
 	# will add story conclusions at the end of the script
 
 	day_body_unformatted = day_unformatted["div2"]
-	#print(day_formatted_index)
-		
 
 	# get intro; in 0th index; format 
 	intro = day_body_unformatted[0]["p"]
@@ -188,9 +196,6 @@ for day_unformatted_index in range(0, 10):
 		join_and_space_intro = join_and_space(intro)
 
 	intro = combine_rubric_and_text(day_rubric, join_and_space_intro)
-	#print(day_formatted_index)
-	#print(intro)
-	#print()
 
 	current_day_formatted["introduction"]["text"] = intro
 
@@ -204,17 +209,23 @@ for day_unformatted_index in range(0, 10):
 			current_story_unformatted["argument"]["p"]["emph"])
 		# get story, combine with rubric; format
 		current_story_unformatted_p = current_story_unformatted["p"]
-		current_story = combine_rubric_and_text(current_story_rubric,
-			join_and_space(current_story_unformatted_p))
+		
+		# 1.6 has latin in it, in own dict
+		if day_formatted_index == "1" and story_index == 6:
+			current_story = splice_latin_in(current_story_unformatted_p, 0, 2, " impetuosissimamente")
+			remainder_story = join_and_space(current_story_unformatted_p[3:])
+			current_story += remainder_story
+		else:
+			current_story = combine_rubric_and_text(current_story_rubric,
+				join_and_space(current_story_unformatted_p))
 
-		# 4.5  has a song in it with italicized text
-		if day_formatted_index == "4" and story_index == 5:
-			#print(current_story_unformatted)
-			song = current_story_unformatted["lg"]["l"]
-			# song is a list of 2 maps
-			song_flattened = song[0]["emph"] + " " + song[1]["emph"] + " " + song[1]["#text"]
-			#print(song_flattened) song at end of story
-			current_story = current_story + " " + song_flattened
+			# 4.5  has a song in it with italicized text
+			if day_formatted_index == "4" and story_index == 5:
+				song = current_story_unformatted["lg"]["l"]
+				# song is a list of 2 maps
+				song_flattened = song[0]["emph"] + " " + song[1]["emph"] + " " + song[1]["#text"]
+				#print(song_flattened) song at end of story
+				current_story = current_story + " " + song_flattened
 
 		current_day_formatted[str(story_index)]["text"] = current_story
 
