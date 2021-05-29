@@ -144,12 +144,13 @@ proem_rubric = proem["argument"]["p"]
 proem_rubric = remove_stanza(proem_rubric)
 
 proem_body = proem["p"] # this is a list that preserves new paragraphs
-proem_flattened = combine_rubric_and_text(proem_rubric, 
-	join_and_space(proem_body))
+#proem_flattened = combine_rubric_and_text(proem_rubric, 
+#	join_and_space(proem_body))
 
 # put proem in desired format location
 text = structure["decameron"]
-text["proem"]["text"] = proem_flattened
+text["proem"]["rubric"] = proem_rubric
+text["proem"]["text"] = join_and_space(proem_body)
 
 # grab the remainder of the decameron; conclusion is also in here
 
@@ -194,9 +195,10 @@ for day_unformatted_index in range(0, 10):
 	else:
 		join_and_space_intro = join_and_space(intro)
 
-	intro = combine_rubric_and_text(day_rubric, join_and_space_intro)
+	#intro = combine_rubric_and_text(day_rubric, join_and_space_intro)
 
-	current_day_formatted["introduction"]["text"] = intro
+	current_day_formatted["introduction"]["rubric"] = day_rubric
+	current_day_formatted["introduction"]["text"] = join_and_space_intro
 
 	# get stories; inner loop for each of the 10; format
 	# from 1 to 10, since those are the indices for the stories
