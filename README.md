@@ -24,6 +24,9 @@ Building a tool that uses a modified grep to return text matches (with the surro
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue. 
 
+## Dependencies
+[little-mallet-wrapper](https://pypi.org/project/little-mallet-wrapper/) has a dependencies on Mallet (and therefore on Java). Please refer [here](https://programminghistorian.org/en/lessons/topic-modeling-and-mallet).
+
 ## Notes
 
 There is sometimes text that is marked as italicized or with foreign language metadata (always Latin). I have removed these tags because the text that contains it is formatted in a very odd way. The things to grep for in the original/ raw text are: @, #, text, foreign, lat, rend, block, canzonetta. 

@@ -14,6 +14,8 @@ import seaborn as sns
 
 import matplotlib.pyplot as plt
 
+import constants
+
 root = "/home/cooper/src/decameron/output_cached/"
 output_path_topic_keys = root + "mallet.topic_keys.10"
 output_path_topic_distributions = root + "mallet.topic_distributions.10"
@@ -21,93 +23,65 @@ output_path_topic_distributions = root + "mallet.topic_distributions.10"
 topic_keys = lmw.load_topic_keys(output_path_topic_keys)
 topic_distributions = lmw.load_topic_distributions(output_path_topic_distributions)
 
+truncated_topics = [', '.join(x[:5]) for x in topic_keys]
+truncated_topics_edited = truncated_topics[:5] + truncated_topics[6:8] + truncated_topics[9:]
+
 decameron_path = "/home/cooper/src/decameron/data/csv/decameron.csv"
 
+def group_wordcounts_by_attr(combined_df, attr):
+	wordcounts = combined_df.groupby([attr])[['{}_unnorm'.format(i) for i in range(10)]].sum()
+	for i in range(10):
+		wordcounts['{}_norm'.format(i)] = wordcounts['{}_unnorm'.format(i)] / combined_df.groupby([attr])['Word Count'].sum()
+	return wordcounts
+
+def plot_heatmap(wordcounts, out_file_name, vmax, color):
+	f, ax = plt.subplots(figsize=[10,10])
+	sns.heatmap(wordcounts[['{}_norm'.format(i) for i in range(10)]].drop("8_norm", axis=1).drop("5_norm", axis=1), 
+		vmax=vmax, cmap=sns.light_palette(color, as_cmap=True), 
+		annot=True, fmt='.3f', cbar=False)
+	sns.set_context('talk')
+
+	plt.xticks(np.arange(8) + .5, truncated_topics_edited, rotation=45, ha="right")
+	plt.tight_layout()
+	plt.savefig("/home/cooper/src/decameron/fig/" + out_file_name)
+
+def narrator_topics_barplot(narrator_wordcounts, narrator):
+	f, ax = plt.subplots(figsize=[8,8])
+	narrator_wordcounts_edited = narrator_wordcounts.drop("8_norm", axis=1).drop("5_norm", axis=1)
+	cols = [0, 1, 2, 3, 4, 6, 7, 9]
+	narrator_wordcounts_edited.loc[narrator][['{}_norm'.format(i) for i in cols]].plot(kind="bar")
+	plt.title("Topic Proportions for " + narrator.capitalize())
+	ax.set_xticklabels(truncated_topics_edited, rotation=45, ha='right')
+	plt.tight_layout()
+	#plt.show()
+	plt.savefig("/home/cooper/src/decameron/fig/" + narrator + ".pdf")
+
 decameron_df = pd.read_csv(decameron_path)
-#print(decameron_df.sample(5))
-#(len(decameron_df.index))
 
-
-stop_words = ['il', 'lo', 'la', 'i', 'le', 'gli', 'è', 'tu', 'tuo', 'tua', 'suo', 'sue',
-			  'suoi', 'sua', 'loro', 'lei', 'quale', 'quali', 'questa', 'questo', 'cosa',
-			  'che', 'non', 'per', 'come', 'egli', 'voi', 'del', 'della', 'così',  'più',
-			  'con', 'col', 'cui', 'una', 'qual', 'fu', 'fosse', 'era', 'lui', 'quello',
-			  'senza', 'alla', 'dove', 'già', 'ogni', 'vostra', 'vostro', 'vostri', 'vostre',
-			  'nostro', 'nostra', 'nostre', 'nostri', 'altro', 'altra', 'altre', 'altri',
-			  'molto', 'molta', 'molte', 'molti', 'nel', 'ciò', 'quella', 'bene', 'ben',
-			  'ella', 'disse', 'sopra', 'noi', 'alessandro', 'ruggieri', 'cimone', 'saladino',
-			  'nicostrato', 'bernabò', 'ser', 'ciappelletto', 'esser', 'essere', 'fa', 'fare',
-			  'alcuna', 'alcun', 'alcuno', 'ora', 'far', 'quando', 'natan', 'pietro', 'mitridanes',
-			  'gualtieri', 'filippo', 'alberto', 'ferondo', 'gianni', 'fatto', 'tito', 'currado',
-			  'guiscardo', 'ché', 'ricciardo', 'nastagio', 'riccardo', 'chichibio', 'tedaldo',
-			  'bruno', 'gisippo', 'federigo', 'mai', 'ma', 'poi', 'aveva', 'mio', 'mia', 'masetto',
-			  'rinaldo', 'ambruogiuolo', 'nella', 'nello', 'lor', 'erano', 'lor', 'gerbino', 
-			  'andreuccio', 'gabriotto', 'tanto', 'tanti', 'tante', 'tanta', 'cose', 'delle',
-			  'calandrino', 'buffalmacco', 'rustico', 'arriguccio', 'tancredi', 'giosefo',
-			  'melisso', 'quanto', 'dentro', 'aldobrandino', 'tutto', 'tutta', 'tutti', 'tutte',
-			  'nelle', 'giù', 'assai', 'avea', 'dire', 'avendo', 'essendo', 'guiglielmo',
-			  'anichino', 'fece', 'sia', 'ancora', 'martuccio', 'efigenia', 'antigono', 'giannetta',
-			  'uno', 'avessi', 'egano', 'salabaetto', 'quivi', 'sofronia', 'chi', 'spinelloccio',
-			  'giacomino', 'ghino', 'allora', 'angiulieri', 'catella', 'zima', 'geri', 'pavia',
-			  'puccio', 'quindi', 'pirro' , 'perché', 'salabaetto', 'giannotto', 'dico', 'griselda', 'niccolosa',
-			  'dall']
-
-#training_data = lmw.process_string(t, stop_words=stop_words), for t in decameron_df[decameron_df['Day'=='1']]['Text'].values
-training_data = [lmw.process_string(t, stop_words=stop_words) for t in decameron_df[decameron_df['Day']==1]['Text'].values]
-#decameron_df[decameron_df['Day']=='10']['Text'].values
-
+training_data = [lmw.process_string(t, 
+	stop_words=constants.stop_words) for t in decameron_df[decameron_df['Day']==1]['Text'].values]
 training_data = [d for d in training_data if d.strip()]
 
-word_count_per_story = [len(d.split(' ')) for d in training_data]
-word_count_per_story
-
+#word_count_per_story = [len(d.split(' ')) for d in training_data]
 decameron_df['Word Count'] = decameron_df['Text'].str.split(' ').apply(lambda x: len(x))
-decameron_df['Word Count']
 
+# Compute unnormalized topic breakdown, based on per-story wordcount
 combined_df = pd.concat([decameron_df, pd.DataFrame(topic_distributions)], axis=1)
-
 for i in range(10):
     combined_df['{}_unnorm'.format(i)] = combined_df[i] * combined_df['Word Count']
 
-combined_df
+# Analysis to give topic distributions by Day
+day_wordcounts = group_wordcounts_by_attr(combined_df, 'Day')
+plot_heatmap(day_wordcounts, "day_topics.pdf", .09, "#be0119")
 
-combined_df.groupby(['Day'])[['{}_unnorm'.format(i) for i in range(10)]].sum()
-#combined_df.groupby(['Narrator'])[['{}_unnorm'.format(i) for i in range(10)]].sum()
+# Analysis to give topic distributions by Narrator
+narrator_wordcounts = group_wordcounts_by_attr(combined_df, 'Narrator')
+plot_heatmap(narrator_wordcounts, "narrator_topics.pdf", .08, "#0b2a63")
 
-day_wordcounts = combined_df.groupby(['Day'])[['{}_unnorm'.format(i) for i in range(10)]].sum()
-for i in range(10):
-    day_wordcounts['{}_norm'.format(i)] = day_wordcounts['{}_unnorm'.format(i)] / combined_df.groupby(['Day'])['Word Count'].sum()
+# Analysis to give topic distributions by Gender of narrator
+gender_wordcounts = group_wordcounts_by_attr(combined_df, 'Gender')
+plot_heatmap(gender_wordcounts, "gender_topics.pdf", .05, "#0e5e24")
 
-f, ax = plt.subplots(figsize=[10,10])
-sns.heatmap(day_wordcounts[['{}_norm'.format(i) for i in range(10)]], vmax=.1, cmap=sns.light_palette("#be0119", as_cmap=True), annot=True, fmt='.2f', cbar=False)
-sns.set_context('talk')
-
-truncated_topics = [', '.join(x[:5]) for x in topic_keys]
-
-plt.xticks(np.arange(10) + .5, truncated_topics,rotation=45, ha="right")
-plt.tight_layout()
-
-narrator_wordcounts = combined_df.groupby(['Narrator'])[['{}_unnorm'.format(i) for i in range(10)]].sum()
-for i in range(10):
-    narrator_wordcounts['{}_norm'.format(i)] = narrator_wordcounts['{}_unnorm'.format(i)] / combined_df.groupby(['Narrator'])['Word Count'].sum()
-
-
-f, ax = plt.subplots(figsize=[10,10])
-sns.heatmap(narrator_wordcounts[['{}_norm'.format(i) for i in range(10)]].drop("8_norm", axis=1).drop("5_norm", axis=1), vmax=.06, cmap=sns.light_palette("#be0119", as_cmap=True), annot=True, fmt='.2f', cbar=False)
-sns.set_context('talk')
-
-truncated_topics = [', '.join(x[:5]) for x in topic_keys]
-
-truncated_topics_edited = truncated_topics[:5] + truncated_topics[6:8] + truncated_topics[9:]
-
-plt.xticks(np.arange(8) + 0.5, truncated_topics_edited, rotation=45, ha="right")
-plt.tight_layout()
-plt.savefig("/home/cooper/src/decameron/fig/narrator_topics.pdf")
-
-f, ax = plt.subplots(figsize=[8,8])
-narrator_wordcounts.ix['dioneo'][['{}_norm'.format(i) for i in range(10)]].plot(kind="bar")
-plt.title("Dioneo")
-truncated_topics = [', '.join(x[:5]) for x in topic_keys]
-
-ax.set_xticklabels(truncated_topics, rotation=45, ha='right')
-
+# Analysis to give bar plot for each narrator
+for narrator in constants.narrators:
+	narrator_topics_barplot(narrator_wordcounts, narrator)

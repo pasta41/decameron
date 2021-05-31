@@ -1,0 +1,27 @@
+stop_words = ['il', 'lo', 'la', 'i', 'le', 'gli', 'è', 'tu', 'tuo', 'tua', 'suo', 'sue',
+			  'suoi', 'sua', 'loro', 'lei', 'quale', 'quali', 'questa', 'questo', 'cosa',
+			  'che', 'non', 'per', 'come', 'egli', 'voi', 'del', 'della', 'così',  'più',
+			  'con', 'col', 'cui', 'una', 'qual', 'fu', 'fosse', 'era', 'lui', 'quello',
+			  'senza', 'alla', 'dove', 'già', 'ogni', 'vostra', 'vostro', 'vostri', 'vostre',
+			  'nostro', 'nostra', 'nostre', 'nostri', 'altro', 'altra', 'altre', 'altri',
+			  'molto', 'molta', 'molte', 'molti', 'nel', 'ciò', 'quella', 'bene', 'ben',
+			  'ella', 'disse', 'sopra', 'noi', 'alessandro', 'ruggieri', 'cimone', 'saladino',
+			  'nicostrato', 'bernabò', 'ser', 'ciappelletto', 'esser', 'essere', 'fa', 'fare',
+			  'alcuna', 'alcun', 'alcuno', 'ora', 'far', 'quando', 'natan', 'pietro', 'mitridanes',
+			  'gualtieri', 'filippo', 'alberto', 'ferondo', 'gianni', 'fatto', 'tito', 'currado',
+			  'guiscardo', 'ché', 'ricciardo', 'nastagio', 'riccardo', 'chichibio', 'tedaldo',
+			  'bruno', 'gisippo', 'federigo', 'mai', 'ma', 'poi', 'aveva', 'mio', 'mia', 'masetto',
+			  'rinaldo', 'ambruogiuolo', 'nella', 'nello', 'lor', 'erano', 'lor', 'gerbino', 
+			  'andreuccio', 'gabriotto', 'tanto', 'tanti', 'tante', 'tanta', 'cose', 'delle',
+			  'calandrino', 'buffalmacco', 'rustico', 'arriguccio', 'tancredi', 'giosefo',
+			  'melisso', 'quanto', 'dentro', 'aldobrandino', 'tutto', 'tutta', 'tutti', 'tutte',
+			  'nelle', 'giù', 'assai', 'avea', 'dire', 'avendo', 'essendo', 'guiglielmo',
+			  'anichino', 'fece', 'sia', 'ancora', 'martuccio', 'efigenia', 'antigono', 'giannetta',
+			  'uno', 'avessi', 'egano', 'salabaetto', 'quivi', 'sofronia', 'chi', 'spinelloccio',
+			  'giacomino', 'ghino', 'allora', 'angiulieri', 'catella', 'zima', 'geri', 'pavia',
+			  'puccio', 'quindi', 'pirro' , 'perché', 'salabaetto', 'giannotto', 'dico', 'griselda', 'niccolosa',
+			  'dall']
+
+narrators = ["panfilo", "neifile", "filomena", "dioneo", "fiammetta",
+	"emilia", "filostrato", "lauretta", "elissa", "pampinea"]
+

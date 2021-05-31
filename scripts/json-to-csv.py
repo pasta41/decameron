@@ -13,16 +13,22 @@ days = decameron['decameron']['days']
 
 story_indexes = [str(i) for i in range(1,11)]
 
+men = ["panfilo", "filostrato", "dioneo"]
+gender = "woman"
+
 
 with open("../data/csv/decameron.csv", "w", encoding='utf8') as csv_file:
 	writer = csv.writer(csv_file)
-	writer.writerow(['Day', 'Story', 'Narrator', 'Text'])
+	writer.writerow(['Day', 'Story', 'Narrator', 'Gender', 'Text'])
 	
 	for day_index, day in days.items():
-		sections = day['sections']
-	
+		sections = day['sections']	
 		for story_index in sections.keys():
 			if story_index in story_indexes:
 				story = sections[story_index]["text"]
 				narrator = sections[story_index]["narrator"]
-				writer.writerow([day_index, story_index, narrator, story])
+				if narrator in men:
+					gender = "man"
+				else:
+					gender = "woman"
+				writer.writerow([day_index, story_index, narrator, gender, story])
