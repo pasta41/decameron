@@ -12,6 +12,7 @@ import re
 import numpy as np
 import pandas as pd
 import little_mallet_wrapper as lmw
+import pdb
 
 path_to_mallet = "~/mallet-2.0.8/bin/mallet"
 
@@ -43,16 +44,19 @@ stop_words = ['il', 'lo', 'la', 'i', 'le', 'gli', 'è', 'tu', 'tuo', 'tua', 'suo
 			  'anichino', 'fece', 'sia', 'ancora', 'martuccio', 'efigenia', 'antigono', 'giannetta',
 			  'uno', 'avessi', 'egano', 'salabaetto', 'quivi', 'sofronia', 'chi', 'spinelloccio',
 			  'giacomino', 'ghino', 'allora', 'angiulieri', 'catella', 'zima', 'geri', 'pavia',
-			  'puccio', 'quindi', 'pirro' , 'perché']
+			  'puccio', 'quindi', 'pirro' , 'perché', 'salabaetto', 'giannotto', 'dico', 'griselda', 'niccolosa',
+			  'dall']
 
 training_data = [lmw.process_string(t, stop_words=stop_words) for t in decameron_df['Text'].tolist()]
 training_data = [d for d in training_data if d.strip()]
 
 #print(len(training_data))
 
+
+
 lmw.print_dataset_stats(training_data)
 
-num_topics = 6
+num_topics = 10
 output_directory_path = '/home/cooper/src/decameron/output'
 
 topic_keys, topic_distributions = lmw.quick_train_topic_model(path_to_mallet,
@@ -65,6 +69,3 @@ assert(len(topic_distributions) == len(training_data))
 for i, t in enumerate(topic_keys):
 	print(i, '\t', ' '.join(t[:10]))
 
-#for p, d in lmw.get_top_docs(training_data, topic_distributions, topic_index=0, n=3):
-#	print(round(p, 4), d)
-#	print()
