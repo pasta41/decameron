@@ -13,6 +13,7 @@ import pdb
 import seaborn as sns
 
 import matplotlib.pyplot as plt
+import json
 
 import constants
 
@@ -25,6 +26,18 @@ topic_keys = lmw.load_topic_keys(output_path_topic_keys)
 topic_distributions = lmw.load_topic_distributions(output_path_topic_distributions)
 word_distributions = lmw.load_topic_word_distributions(output_path_word_distributions)
 
+
+topics_edited_names = ['seafaring', 'peasants/farming', 'knights/nobility', 'courts/laws',
+	'merchants/economy', "common1", 'courtesy', 'religion/sin', "common2", 'love/vengeance']
+
+topics_dict = {}
+
 for i in range(10):
-	print(str(i) + ":\t" + ''.join(str(e) + ", " for e in topic_keys[i]))
+	topics_dict[topics_edited_names[i]] = topic_keys[i]
+
+print(json.dumps(topics_dict, indent=2, ensure_ascii=False))
+
+for i in range(10):
+	print(i)
+	print(topic_keys[i])
 	print()
