@@ -22,7 +22,6 @@ decameron_path = "/home/cooper/src/decameron/data/csv/decameron.csv"
 decameron_df = pd.read_csv(decameron_path)
 story_ids = decameron_df["ID"].tolist()
 
-
 # first, we want to split into train and test datasets
 
 # for training, we want to make sure that we have chunked into
@@ -67,10 +66,25 @@ def create_data_set(story_ids, chunk_size):
 	return texts, labels
 
 
-chunk_size = 50
+chunk_size = 80
 
 train_texts, train_labels = create_data_set(train_set_story_ids, chunk_size)
 test_texts, test_labels = create_data_set(test_set_story_ids, chunk_size)
 
-print(test_texts)
-print(test_labels)
+# write this to save to a file so that can re-run exact config
+print("Train story ids:")
+print(train_set_story_ids)
+print()
+print("Test story ids:")
+print(test_set_story_ids)
+print()
+
+# run logistics regression
+vectorizer = TfidfVectorizer()
+X_train = vectorizer.fit_transform(train_texts)
+X_test = vectorizer.transform(test_texts)
+
+model = LogisticRegression(max_iter=5000).fit(X_train, train_labels)
+predictions = model.predict(X_test)
+
+print(classification_report(test_labels, predictions))
