@@ -40,8 +40,8 @@ story_ids = decameron_df["ID"].tolist()
 train_set_story_ids = []
 test_set_story_ids = []
 
-# num_train is the number of stories that will be used for training
-# 10 - num_train is number used for test
+# num_train is the number of stories that will be used for training; 
+# 10 - num_train is number used for test, per storyteller
 def storyteller_train_test_split(storyteller, num_train=8):
 	# get story ids for the story teller
 	storyteller_ids =  decameron_df[decameron_df['Narrator']==storyteller]['ID'].tolist()
@@ -49,41 +49,51 @@ def storyteller_train_test_split(storyteller, num_train=8):
 	test_set_story_ids = [x for x in storyteller_ids if x not in train_set_story_ids]
 	return train_set_story_ids, test_set_story_ids
 
+# 30 stories by men, 70 by women
+# so for 80/20 train/test, we want 24 of men, 56 of the women for train
+def gender_test_train_split(gender, prop_train=.8):
+	gender_ids =  decameron_df[decameron_df['Gender']==gender]['ID'].tolist()
+	num_train = int(prop_train * len(gender_ids))
+	train_gender_ids = random.sample(gender_ids, num_train)
+	test_gender_ids = [x for x in gender_ids if x not in train_gender_ids]
+	return train_gender_ids, test_gender_ids
 
-if len(sys.argv) != 2:
-	print("Must supply either 'random' or 'even' as argument.")
+# this is hideous but i forgot python and arg parser and this works
+
+if len(sys.argv) < 3:
+	print("Must supply appropriate arguments: [random | representative] [storyteller | gender]")
 	exit(1)
+
+classify_by_gender = sys.argv[2] == 'gender'
 
 if sys.argv[1]=='random':
-	print("Using random representation of storytellers in train/test")
 	train_set_story_ids = random.sample(story_ids, 80)
 	test_set_story_ids = [x for x in story_ids if x not in train_set_story_ids]
-elif sys.argv[1]=='even':
-	# make sure that we are getting equal representation of storytellers
-	# in the train/test split
-	print("Using even representation of storytellers in train/test")
-	for storyteller in constants.narrators:
-		storyteller_train_ids, storyteller_test_ids = storyteller_train_test_split(storyteller)
-		train_set_story_ids.extend(storyteller_train_ids)
-		test_set_story_ids.extend(storyteller_test_ids)
-
-	
+elif sys.argv[1]=='representative':
+	# make sure that we are getting equal representation in the train/test split
+	if sys.argv[2] == 'storyteller':
+		for storyteller in constants.narrators:
+			storyteller_train_ids, storyteller_test_ids = storyteller_train_test_split(storyteller)
+			train_set_story_ids.extend(storyteller_train_ids)
+			test_set_story_ids.extend(storyteller_test_ids)
+	elif classify_by_gender:
+		women_train_ids, women_test_ids = gender_test_train_split("woman")
+		men_train_ids, men_test_ids = gender_test_train_split("man")
+		train_set_story_ids.extend(women_train_ids)
+		train_set_story_ids.extend(men_train_ids)
+		test_set_story_ids.extend(women_test_ids)
+		test_set_story_ids.extend(men_test_ids)
+	else:
+		print("Second argument must be 'storyteller' or 'gender'.")
+		exit(1)
 else:
-	print("Invalid argument: {}. Supply 'random' or 'even' as argument.".format(sys.argv[1]))
+	print("Invalid argument: {}. Supply 'random' or 'representative' as first argument.".format(sys.argv[1]))
 	exit(1)
 
-
-# write this to save to a file so that can re-run exact config
-print("Train story ids:")
-print(decameron_df[decameron_df['ID'].isin(train_set_story_ids)][['ID', 'Narrator']])
-print()
-print("Test story ids:")
-print(decameron_df[decameron_df['ID'].isin(test_set_story_ids)][['ID', 'Narrator']])
-print()
-
+print("Using {} representation of {} in train/test split.\n\n".format(sys.argv[1], sys.argv[2]))
 
 # next, construct the training and test sets. We will chunk each story
-# into 80 words (not caring about the remainder) and each chunk will
+# into n words (not caring about the remainder) and each chunk will
 # be a data point. The corresponding label will be the storyteller for
 # to story to which the chunk belongs 
 
@@ -95,34 +105,50 @@ def chunk_story(story_id, n):
 	words = text.split()
 	# rejoin words every n words, put into list
 	story_chunks = [" ".join(words[i:i+n]) for i in range(0, len(words), n)]
-	return story_chunks, story['Narrator'].item()
+	return story_chunks, story['Narrator'].item(), story['Gender'].item()
 
 # iterate through train story ids, chunk story, put into train set; same
 # for test set
-
-def create_data_set(story_ids, chunk_size):
+def create_data_set(story_ids, chunk_size, use_gender):
 	texts = []
 	labels = []
 	for story_id in story_ids:
-		story_chunks, storyteller = chunk_story(story_id, chunk_size)
+		# heinous factoring...whatever
+		story_chunks, storyteller, gender = chunk_story(story_id, chunk_size)
 		for chunk in story_chunks:
 			# add each chunk as a traing put for that storyteller
 			texts.append(chunk)
-			labels.append(storyteller)
+			if use_gender:
+				labels.append(gender)
+			else:
+				labels.append(storyteller)
 	return texts, labels
 
+# run logistic regression
+def run_logistic_regression(chunk_size, train_set_story_ids, test_set_story_ids):
+	train_texts, train_labels = create_data_set(train_set_story_ids, chunk_size, classify_by_gender)
+	test_texts, test_labels = create_data_set(test_set_story_ids, chunk_size, classify_by_gender)
+
+	# run logistics regression
+	vectorizer = TfidfVectorizer()
+	X_train = vectorizer.fit_transform(train_texts)
+	X_test = vectorizer.transform(test_texts)
+
+	model = LogisticRegression(max_iter=5000).fit(X_train, train_labels)
+	predictions = model.predict(X_test)
+	return test_labels, predictions
+
+# write this to save to a file so that can re-run exact config
+print("Train story ids:")
+print(decameron_df[decameron_df['ID'].isin(train_set_story_ids)][['ID', 'Narrator', 'Gender']])
+print()
+print("Test story ids:")
+print(decameron_df[decameron_df['ID'].isin(test_set_story_ids)][['ID', 'Narrator', 'Gender']])
+print()
 
 chunk_size = 80
-
-train_texts, train_labels = create_data_set(train_set_story_ids, chunk_size)
-test_texts, test_labels = create_data_set(test_set_story_ids, chunk_size)
-
-# run logistics regression
-vectorizer = TfidfVectorizer()
-X_train = vectorizer.fit_transform(train_texts)
-X_test = vectorizer.transform(test_texts)
-
-model = LogisticRegression(max_iter=5000).fit(X_train, train_labels)
-predictions = model.predict(X_test)
+test_labels, predictions = run_logistic_regression(chunk_size, 
+												   train_set_story_ids, 
+												   test_set_story_ids)
 
 print(classification_report(test_labels, predictions))
