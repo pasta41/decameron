@@ -14,6 +14,10 @@ from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import ticker
+
+import constants
+import sys
+
 sns.set(style='ticks', font_scale=1.2)
 
 # load the data
@@ -33,11 +37,53 @@ story_ids = decameron_df["ID"].tolist()
 # so to start, we will sample 80% (80) of the stories for train,
 # 20% for test, and then we will chunk them
 
-train_set_story_ids = random.sample(story_ids, 80)
-test_set_story_ids = [x for x in story_ids if x not in train_set_story_ids]
+train_set_story_ids = []
+test_set_story_ids = []
+
+# num_train is the number of stories that will be used for training
+# 10 - num_train is number used for test
+def storyteller_train_test_split(storyteller, num_train=8):
+	# get story ids for the story teller
+	storyteller_ids =  decameron_df[decameron_df['Narrator']==storyteller]['ID'].tolist()
+	train_set_story_ids = random.sample(storyteller_ids, 8)
+	test_set_story_ids = [x for x in storyteller_ids if x not in train_set_story_ids]
+	return train_set_story_ids, test_set_story_ids
+
+
+if len(sys.argv) != 2:
+	print("Must supply either 'random' or 'even' as argument.")
+	exit(1)
+
+if sys.argv[1]=='random':
+	print("Using random representation of storytellers in train/test")
+	train_set_story_ids = random.sample(story_ids, 80)
+	test_set_story_ids = [x for x in story_ids if x not in train_set_story_ids]
+elif sys.argv[1]=='even':
+	# make sure that we are getting equal representation of storytellers
+	# in the train/test split
+	print("Using even representation of storytellers in train/test")
+	for storyteller in constants.narrators:
+		storyteller_train_ids, storyteller_test_ids = storyteller_train_test_split(storyteller)
+		train_set_story_ids.extend(storyteller_train_ids)
+		test_set_story_ids.extend(storyteller_test_ids)
+
+	
+else:
+	print("Invalid argument: {}. Supply 'random' or 'even' as argument.".format(sys.argv[1]))
+	exit(1)
+
+
+# write this to save to a file so that can re-run exact config
+print("Train story ids:")
+print(decameron_df[decameron_df['ID'].isin(train_set_story_ids)][['ID', 'Narrator']])
+print()
+print("Test story ids:")
+print(decameron_df[decameron_df['ID'].isin(test_set_story_ids)][['ID', 'Narrator']])
+print()
+
 
 # next, construct the training and test sets. We will chunk each story
-# into 100 words (not caring about the remainder) and each chunk will
+# into 80 words (not caring about the remainder) and each chunk will
 # be a data point. The corresponding label will be the storyteller for
 # to story to which the chunk belongs 
 
@@ -70,14 +116,6 @@ chunk_size = 80
 
 train_texts, train_labels = create_data_set(train_set_story_ids, chunk_size)
 test_texts, test_labels = create_data_set(test_set_story_ids, chunk_size)
-
-# write this to save to a file so that can re-run exact config
-print("Train story ids:")
-print(train_set_story_ids)
-print()
-print("Test story ids:")
-print(test_set_story_ids)
-print()
 
 # run logistics regression
 vectorizer = TfidfVectorizer()
